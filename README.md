@@ -47,19 +47,134 @@ uv run recipe https://www.bilibili.com/video/BV1xoAhzxEuZ --stt volcano
 
 ## 安装
 
-### 1. 安装 uv（Python 包管理器）
+### 快速开始
 
-**Linux / macOS / WSL:**
+如果你已经有 `uv`、`ffmpeg`、`yt-dlp` 和 DeepSeek API 密钥，可以直接运行：
 
-打开终端，运行：
+```bash
+git clone https://github.com/TsaiHao/recipe-from-video.git
+cd recipe
+uv sync
+echo "DEEPSEEK_API_KEY=你的密钥" > .env
+uv run recipe https://www.bilibili.com/video/BV1xoAhzxEuZ
+```
+
+> 不指定 `--stt` 时默认使用本地 Whisper，无需额外 API 密钥，首次运行会自动下载模型。
+
+### 详细安装步骤
+
+<details>
+<summary><b>Linux / WSL 用户</b></summary>
+
+**1. 安装 uv（Python 包管理器）**
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-安装完成后，重启终端或运行 `source ~/.bashrc`（Linux）/ `source ~/.zshrc`（macOS）使命令生效。
+安装完成后，重启终端或运行 `source ~/.bashrc` 使命令生效。
 
-**Windows:**
+**2. 安装 ffmpeg 和 yt-dlp**
+
+Ubuntu / Debian:
+
+```bash
+sudo apt update && sudo apt install ffmpeg
+uv tool install yt-dlp
+```
+
+Fedora:
+
+```bash
+sudo dnf install ffmpeg
+uv tool install yt-dlp
+```
+
+**3. 下载项目并安装依赖**
+
+```bash
+git clone <本项目地址>
+cd recipe
+uv sync
+```
+
+**4. 配置 API 密钥**
+
+```bash
+cp env.example .env
+```
+
+用文本编辑器（如 `nano .env`）打开 `.env` 文件，填入你的密钥：
+
+```bash
+# 必填 - DeepSeek（用于 AI 生成食谱）
+DEEPSEEK_API_KEY=你的密钥
+
+# 使用线上语音识别服务需要填写下面的 API KEY（推荐 Volcano，速度最快）
+VOLCANO_APP_KEY=你的AppKey
+VOLCANO_ACCESS_KEY=你的AccessKey
+```
+
+</details>
+
+<details>
+<summary><b>macOS 用户</b></summary>
+
+**1. 安装 uv（Python 包管理器）**
+
+打开「终端」应用，运行：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+安装完成后，重启终端或运行 `source ~/.zshrc` 使命令生效。
+
+**2. 安装 ffmpeg 和 yt-dlp**
+
+需要先安装 [Homebrew](https://brew.sh)（如果还没有的话）：
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+然后安装依赖：
+
+```bash
+brew install ffmpeg yt-dlp
+```
+
+**3. 下载项目并安装依赖**
+
+```bash
+git clone <本项目地址>
+cd recipe
+uv sync
+```
+
+**4. 配置 API 密钥**
+
+```bash
+cp env.example .env
+```
+
+用文本编辑器（如 `nano .env` 或 `open -e .env`）打开 `.env` 文件，填入你的密钥：
+
+```bash
+# 必填 - DeepSeek（用于 AI 生成食谱）
+DEEPSEEK_API_KEY=你的密钥
+
+# 使用线上语音识别服务需要填写下面的 API KEY（推荐 Volcano，速度最快）
+VOLCANO_APP_KEY=你的AppKey
+VOLCANO_ACCESS_KEY=你的AccessKey
+```
+
+</details>
+
+<details>
+<summary><b>Windows 用户</b></summary>
+
+**1. 安装 uv（Python 包管理器）**
 
 打开 PowerShell，运行：
 
@@ -69,75 +184,56 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 安装完成后，重启 PowerShell。
 
-验证安装成功：
+**2. 安装 ffmpeg 和 yt-dlp**
 
-```bash
-uv --version
+需要先安装 [Scoop](https://scoop.sh)（如果还没有的话），在 PowerShell 中运行：
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
 ```
 
-### 2. 安装外部工具
-
-本工具依赖 `yt-dlp`（下载视频）和 `ffmpeg`（处理音频），需要单独安装。
-
-**Linux/WSL (Ubuntu/Debian):**
-
-```bash
-sudo apt update
-sudo apt install ffmpeg
-uv tool install yt-dlp
-```
-
-**Linux (Fedora):**
-
-```bash
-sudo dnf install ffmpeg
-uv tool install yt-dlp
-```
-
-**macOS (需先安装 [Homebrew](https://brew.sh)):**
-
-```bash
-brew install ffmpeg yt-dlp
-```
-
-**Windows (需先安装 [Scoop](https://scoop.sh)):**
+然后安装依赖：
 
 ```powershell
 scoop install ffmpeg yt-dlp
 ```
 
-### 3. 下载项目并安装依赖
+**3. 下载项目并安装依赖**
 
-```bash
+```powershell
 git clone <本项目地址>
 cd recipe
 uv sync
 ```
 
-### 4. 配置 API 密钥
+**4. 配置 API 密钥**
 
-本工具需要大语言模型（LLM）的 API 密钥才能工作。
-
-将示例配置文件复制为 `.env`：
-
-```bash
-cp env.example .env
+```powershell
+copy env.example .env
 ```
 
-用文本编辑器打开 `.env` 文件，填入你的密钥：
+用记事本打开 `.env` 文件：
+
+```powershell
+notepad .env
+```
+
+填入你的密钥：
 
 ```bash
 # 必填 - DeepSeek（用于 AI 生成食谱）
 DEEPSEEK_API_KEY=你的密钥
 
-# 使用线上语音识别服务需要填写下面的API KEY（推荐 Volcano，速度最快）
-
-# 火山引擎语音识别
+# 使用线上语音识别服务需要填写下面的 API KEY（推荐 Volcano，速度最快）
 VOLCANO_APP_KEY=你的AppKey
 VOLCANO_ACCESS_KEY=你的AccessKey
 ```
 
-**如何获取密钥：**
+</details>
+
+<details>
+<summary><b>如何获取 API 密钥</b></summary>
 
 | 服务 | 用途 | 申请地址 |
 |------|------|----------|
@@ -146,6 +242,8 @@ VOLCANO_ACCESS_KEY=你的AccessKey
 | Cloudflare Workers AI | 语音识别（备选） | https://dash.cloudflare.com |
 
 > **注意：** `.env` 文件包含你的私密密钥，请勿将其提交到 Git 或分享给他人。
+
+</details>
 
 ## 使用方法
 
